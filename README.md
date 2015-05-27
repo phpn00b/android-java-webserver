@@ -10,8 +10,15 @@ Both of these frameworks were designed to run on real (read as not a phone/table
 ## foxy server
 Written from the start to be simple with very few dependencies. Very straight forward in what it does. Free for all. 
 
-
-A web server to use on android that is pure java and supports a simple MVC framework.
-
+### Supported features
+* GET and POST verbs (other can easily be added)
+* Custom Logic to handle requests
+* Routing requests to either custom logic or to static pages
+* Authentication
+* Permissions
+* Users and Roles that you define and be controlled via the running server
+* Simple easy to work with MVC framework.
+* Ability to embed static resources in your apk or run them off the file system of the device
+ * Also comes with a developing mode where you can edit your html/css/js and run the simple push script which will copy to device almost instantly
 
 Feel free to reach out if you have questions. 
