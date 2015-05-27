@@ -1,5 +1,5 @@
-# ![foxy logo](https://raw.githubusercontent.com/phpn00b/android-java-webserver/master/foxylogo.png) Simple Android Web Server aka FoxyServer
-
+# Simple Android Web Server aka FoxyServer
+![foxy logo](https://raw.githubusercontent.com/phpn00b/android-java-webserver/master/foxylogo.png)
 ## Overview
 My company builds applications that run on embedded devices running android. We had a use case that required these devices to be able to serve up an application to end users (not likely more than 10 at a time). I found plenty of full featured solutions like [spring](https://spring.io/) or [restlet](http://restlet.com/) which is what I was already using for a headless data api.
 
