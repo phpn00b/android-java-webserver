@@ -29,8 +29,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This is a file resolver that finds files on the assets off the android context
@@ -44,7 +42,6 @@ public class AndroidContextAssetsFileResolver implements IFileResolver {
 	private final Context myContext;
 	private final boolean useExternalFiles;
 	private final String externalPathFormat;
-	private final List<String> availableAssets;
 
 	/**
 	 * Creates our file resolver
@@ -55,19 +52,6 @@ public class AndroidContextAssetsFileResolver implements IFileResolver {
 		myContext = androidContext;
 		useExternalFiles = FoxyServerSettings.getInstance().isUsingDeviceFileSystem();
 		externalPathFormat = useExternalFiles ? FoxyServerSettings.getInstance().getDeviceFileSystemAppPath() : null;
-		String[] assets = null;
-		if (!useExternalFiles) {
-			// we are using compiled files so cache the files that we have so we can check if they are there
-			try {
-				assets = androidContext.getAssets().list("htdocs");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		if (assets != null)
-			availableAssets = Arrays.asList(assets);
-		else
-			availableAssets = null;
 	}
 
 	/**
@@ -81,10 +65,8 @@ public class AndroidContextAssetsFileResolver implements IFileResolver {
 	public boolean exists(String file, String language) {
 		String path = !useExternalFiles ? String.format("%s%s", compiledUrl, file) : String.format(externalPathFormat, file);
 		Log.v(Constants.Tag, String.format(useExternalFiles ? FS_FORMAT : ASSET_FORMAT, path));
-		if (!useExternalFiles)
-			return true;
+		return !useExternalFiles || new File(path).exists();
 
-		return new File(path).exists();
 	}
 
 	/**
