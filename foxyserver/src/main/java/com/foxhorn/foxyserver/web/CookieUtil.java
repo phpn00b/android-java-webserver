@@ -16,12 +16,28 @@
  *
  */
 
-package com.foxhorn.foxyserver;
+package com.foxhorn.foxyserver.web;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * compile constants
+ * Used to aid in parsing cookies
  */
-public class Constants {
-	public static final String Tag = "foxy-server";
+public class CookieUtil {
 
+	private static final Pattern cookiePattern = Pattern.compile("([^=]+)=([^;]*);?\\s?");
+
+	public static Map<String, String> parseCookieString(String cookies) {
+		Map<String, String> cookieList = new HashMap<>();
+		Matcher matcher = cookiePattern.matcher(cookies);
+		while (matcher.find()) {
+			String cookieKey = matcher.group(1).trim();
+			String cookieValue = matcher.group(2).trim();
+			cookieList.put(cookieKey, cookieValue);
+		}
+		return cookieList;
+	}
 }

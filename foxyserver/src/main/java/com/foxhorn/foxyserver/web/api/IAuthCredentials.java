@@ -16,12 +16,36 @@
  *
  */
 
-package com.foxhorn.foxyserver;
+package com.foxhorn.foxyserver.web.api;
 
 /**
- * compile constants
+ * This is the basic structure that all credential implementations must support
  */
-public class Constants {
-	public static final String Tag = "foxy-server";
+@SuppressWarnings("unused")
+public interface IAuthCredentials {
 
+	/**
+	 * @return the id of the user
+	 */
+	Long getId();
+
+	/**
+	 * @return the logon name
+	 */
+	String getLogonName();
+
+	/**
+	 * @return the hashed password
+	 */
+	String getPasswordHash();
+
+	/**
+	 * @return true if the account is active and should be allowed to be used
+	 */
+	Boolean getIsActive();
+
+	/**
+	 * @return the number of times that a login attempt has failed
+	 */
+	short getFailedLoginAttempts();
 }

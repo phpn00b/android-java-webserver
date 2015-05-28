@@ -16,12 +16,22 @@
  *
  */
 
-package com.foxhorn.foxyserver;
+package com.foxhorn.foxyserver.web.api;
 
 /**
- * compile constants
+ * This defines the structure of an auth role
+ * Created by Matt Van Horn on 11/16/14.
  */
-public class Constants {
-	public static final String Tag = "foxy-server";
+public interface IAuthRole {
 
+	/**
+	 * @return the id of the role
+	 */
+	@SuppressWarnings("unused")
+	Long getId();
+
+	/**
+	 * @return the name of the role
+	 */
+	String getName();
 }

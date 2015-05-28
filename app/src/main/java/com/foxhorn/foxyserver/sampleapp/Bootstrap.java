@@ -16,12 +16,10 @@
  *
  */
 
-package com.foxhorn.foxyserver;
+package com.foxhorn.foxyserver.sampleapp;
 
 /**
- * compile constants
+ * Created by mvanhorn on 5/27/15.
  */
-public class Constants {
-	public static final String Tag = "foxy-server";
-
+public class Bootstrap {
 }

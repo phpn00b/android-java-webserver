@@ -16,12 +16,27 @@
  *
  */
 
-package com.foxhorn.foxyserver;
+package com.foxhorn.foxyserver.web.api;
+
+import java.security.MessageDigest;
 
 /**
- * compile constants
+ * This class helps with crypto tasks
+ * Created by Matt Van Horn on 11/14/14.
  */
-public class Constants {
-	public static final String Tag = "foxy-server";
+public interface ICryptoHandler {
 
+	/**
+	 * @return the active message digest in use
+	 */
+	@SuppressWarnings("unused")
+	MessageDigest getMessageDigest();
+
+	/**
+	 * Used to get a hash of an input string
+	 *
+	 * @param input the string to hash
+	 * @return the hash of the target
+	 */
+	String getHashOfString(String input);
 }

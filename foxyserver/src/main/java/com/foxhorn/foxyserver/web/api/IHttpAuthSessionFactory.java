@@ -16,12 +16,23 @@
  *
  */
 
-package com.foxhorn.foxyserver;
+package com.foxhorn.foxyserver.web.api;
+
+import com.foxhorn.foxyserver.web.HttpContext;
+import com.foxhorn.foxyserver.web.security.HttpAuthContext;
 
 /**
- * compile constants
+ * This defines the structure a class that creates IHttpAuthSessions.
+ * This will allow you to inject
+ * Created by Matt Van Horn on 11/16/14.
  */
-public class Constants {
-	public static final String Tag = "foxy-server";
+public interface IHttpAuthSessionFactory {
 
+	/**
+	 * Creates our auth session
+	 *
+	 * @param authContext the auth context used to create the session
+	 * @return the session
+	 */
+	IHttpAuthSession constructSession(HttpAuthContext authContext, HttpContext httpContext);
 }
