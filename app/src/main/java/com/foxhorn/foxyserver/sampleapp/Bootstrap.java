@@ -21,7 +21,9 @@ package com.foxhorn.foxyserver.sampleapp;
 import android.content.Context;
 
 import com.foxhorn.foxyserver.sampleapp.auth.ExampleGuestOnlyAuthHandler;
+import com.foxhorn.foxyserver.web.api.IFileResolver;
 import com.foxhorn.foxyserver.web.api.IHttpAuthHandler;
+import com.foxhorn.foxyserver.web.hosting.AndroidContextAssetsFileResolver;
 import com.foxhorn.foxyserver.web.hosting.HttpApplication;
 
 import java.io.IOException;
@@ -34,15 +36,16 @@ public class Bootstrap {
 
 	private HttpApplication httpApplication;
 	private final IHttpAuthHandler authHandler;
+	private IFileResolver fileResolver;
 
 	public Bootstrap() {
 		authHandler = new ExampleGuestOnlyAuthHandler();
 	}
 
 	public void start(Context androidContext) {
-		httpApplication = new HttpApplication(9321, androidContext, null, null, authHandler);
+		fileResolver = new AndroidContextAssetsFileResolver(androidContext);
+		httpApplication = new HttpApplication(9321, androidContext, null, fileResolver, authHandler);
 		httpApplication.start();
-
 	}
 
 	public void stop() throws IOException, InterruptedException {

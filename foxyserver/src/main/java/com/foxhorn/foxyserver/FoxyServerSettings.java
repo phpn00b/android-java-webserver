@@ -37,6 +37,7 @@ import java.security.NoSuchAlgorithmException;
 public class FoxyServerSettings {
 	private static final String BUILT_IN_SALT = "7y8Mg8eMAA8ji8imGksySnhk8jadq6mkS4kaF0Cgsx2xYPLT0FMK8kOQTrkRnr8";
 	private static final String HARDWARE_ID_NOT_SET = "UNKNOWN";
+	private static final String DEFAULT_EXTERNAL_FILESYSTEM_PATH_FORMAT = "/sdcard/foxy-server/html/%s";
 	private static final int SESSION_INACTIVITY_TIMEOUT_SECONDS = 3600;
 	private int getSessionInactivityTimeoutSeconds = SESSION_INACTIVITY_TIMEOUT_SECONDS;
 	private String appPrivateCryptoSalt = BUILT_IN_SALT;
@@ -44,7 +45,7 @@ public class FoxyServerSettings {
 	private String deviceHardwareId = HARDWARE_ID_NOT_SET;
 	private boolean noTeaForYou;
 	private boolean useDeviceFileSystem = false;
-	private String deviceFileSystemAppPath;
+	private String deviceFileSystemAppPath = DEFAULT_EXTERNAL_FILESYSTEM_PATH_FORMAT;
 	private String defaultLanguage = "en-US";
 
 	private FoxyServerSettings() {
@@ -154,7 +155,7 @@ public class FoxyServerSettings {
 	}
 
 	/**
-	 * @param deviceFileSystemAppPath this is the path on the device fs to use as the app root
+	 * @param deviceFileSystemAppPath this is the path on the device fs to use as the app root. default is /sdcard/foxy-server/html/%s note that this should end with %s as it is used with a string format
 	 */
 	public void setDeviceFileSystemAppPath(String deviceFileSystemAppPath) {
 		this.deviceFileSystemAppPath = deviceFileSystemAppPath;
