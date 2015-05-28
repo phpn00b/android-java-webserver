@@ -27,6 +27,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -151,88 +153,104 @@ public class HttpResponse {
 		if (wasProcessed)
 			return;
 		wasProcessed = true;
-		// if no status code has been set yet default to status code 200 ie all good
-		if (httpStatus == 0) {
-			httpStatus = HTTP_STATUS_OK;
-		}
-		if (rawReply != null) {
-			// this will be a binary response
-			if (StringUtils.isNullEmptyOrWhiteSpace(contentType)) {
-				contentType = "raw";
+		try {
+			// if no status code has been set yet default to status code 200 ie all good
+			if (httpStatus == 0) {
+				httpStatus = HTTP_STATUS_OK;
 			}
-			try {
-				OutputStream outputStream = httpContext.getClientSocket().getOutputStream();
-				contentLength = rawReply.length;
-				outputStream.write(getHeaders().getBytes());
-				outputStream.write(rawReply);
-				outputStream.flush();
-				return;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else if (bodyIsFilePath) { // body is a file path
-			// we will write a file to the output stream
-			if (StringUtils.isNullEmptyOrWhiteSpace(contentType)) {
-				setContentTypeFromExtension();
-			}
-			BufferedInputStream fileInputStream;
-			// verify that the file we are looking for exists
-			if (httpContext.getHttpApplication().getFileResolver().exists(body, httpContext.getResponseLanguage())) {
+			if (rawReply != null) {
+				// this will be a binary response
+				if (StringUtils.isNullEmptyOrWhiteSpace(contentType)) {
+					contentType = "raw";
+				}
 				try {
-					fileInputStream = new BufferedInputStream(httpContext.getHttpApplication().getFileResolver().getFileStreamFor(body, httpContext.getRequest().getRequestedLanguage()));
-					// our file resolver was able to find the file all good
+					OutputStream outputStream = httpContext.getClientSocket().getOutputStream();
+					contentLength = rawReply.length;
+					outputStream.write(getHeaders().getBytes());
+					outputStream.write(rawReply);
+					outputStream.flush();
+					return;
 				} catch (IOException e) {
-					// had getting the file stream
 					e.printStackTrace();
+				}
+			} else if (bodyIsFilePath) { // body is a file path
+				// we will write a file to the output stream
+				if (StringUtils.isNullEmptyOrWhiteSpace(contentType)) {
+					setContentTypeFromExtension();
+				}
+				BufferedInputStream fileInputStream;
+				// verify that the file we are looking for exists
+				if (httpContext.getHttpApplication().getFileResolver().exists(body, httpContext.getResponseLanguage())) {
+					try {
+						fileInputStream = new BufferedInputStream(httpContext.getHttpApplication().getFileResolver().getFileStreamFor(body, httpContext.getRequest().getRequestedLanguage()));
+						// our file resolver was able to find the file all good
+					} catch (IOException e) {
+						// had getting the file stream
+						e.printStackTrace();
+						send404();
+						return;
+					}
+				} else {
+					// file did not exists
 					send404();
 					return;
 				}
-			} else {
-				// file did not exists
-				send404();
-				return;
-			}
 
-			//contentLength = fileInputStream.available()
-			ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
-			byte[] buf = new byte[2048];
-			int count;
-			try {
-				while ((count = fileInputStream.read(buf)) != -1) {
-					tempOut.write(buf, 0, count);
+				//contentLength = fileInputStream.available()
+				ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
+				byte[] buf = new byte[2048];
+				int count;
+				try {
+					while ((count = fileInputStream.read(buf)) != -1) {
+						tempOut.write(buf, 0, count);
+					}
+					tempOut.flush();
+					OutputStream outputStream = httpContext.getClientSocket().getOutputStream();
+					contentLength = tempOut.size() + (extraDataForReply != null ? extraDataForReply.length : 0);
+					outputStream.write(getHeaders().getBytes());
+					outputStream.write(tempOut.toByteArray());
+					if (extraDataForReply != null)
+						outputStream.write(extraDataForReply);
+					outputStream.flush();
+					return;
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				tempOut.flush();
-				OutputStream outputStream = httpContext.getClientSocket().getOutputStream();
-				contentLength = tempOut.size() + (extraDataForReply != null ? extraDataForReply.length : 0);
-				outputStream.write(getHeaders().getBytes());
-				outputStream.write(tempOut.toByteArray());
-				if (extraDataForReply != null)
-					outputStream.write(extraDataForReply);
-				outputStream.flush();
-				return;
-			} catch (IOException e) {
-				e.printStackTrace();
+			} else if (body != null) { // body is not a file path
+				// we will send the string as the reply body
+				try {
+					OutputStream outputStream = httpContext.getClientSocket().getOutputStream();
+					contentLength = body.length();
+					outputStream.write(getHeaders().getBytes());
+					outputStream.write(body.getBytes());
+					outputStream.flush();
+					return;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		} else if (body != null) { // body is not a file path
-			// we will send the string as the reply body
 			try {
 				OutputStream outputStream = httpContext.getClientSocket().getOutputStream();
-				contentLength = body.length();
+				contentLength = 0;
 				outputStream.write(getHeaders().getBytes());
-				outputStream.write(body.getBytes());
 				outputStream.flush();
-				return;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-		try {
-			OutputStream outputStream = httpContext.getClientSocket().getOutputStream();
-			contentLength = 0;
-			outputStream.write(getHeaders().getBytes());
-			outputStream.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			byte[] data = errors.toString().getBytes();
+			try {
+				OutputStream outputStream = httpContext.getClientSocket().getOutputStream();
+				contentLength = data.length;
+				outputStream.write(getHeaders().getBytes());
+				outputStream.write(data);
+				outputStream.flush();
+				return;
+			} catch (IOException eio) {
+				eio.printStackTrace();
+			}
 		}
 	}
 

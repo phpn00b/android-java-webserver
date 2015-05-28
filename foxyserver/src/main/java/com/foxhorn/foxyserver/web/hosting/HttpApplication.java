@@ -65,7 +65,10 @@ public class HttpApplication implements Runnable {
 		this.httpAuthHandler = httpAuthHandler;
 		serverPort = port;
 		this.fileResolver = fileResolver;
-		handlerCount = activeHandlers.length;
+		if (activeHandlers != null)
+			handlerCount = activeHandlers.length;
+		else
+			handlerCount = 0;
 		FoxyServerSettings.getInstance().setDeviceHardwareId(androidContext);
 		useExternalFiles = FoxyServerSettings.getInstance().isUsingDeviceFileSystem();
 	}
@@ -120,6 +123,9 @@ public class HttpApplication implements Runnable {
 		return null;
 	}
 
+	/**
+	 * @return gets our file resolver
+	 */
 	public IFileResolver getFileResolver() {
 		return fileResolver;
 	}
@@ -127,5 +133,12 @@ public class HttpApplication implements Runnable {
 	@SuppressWarnings("unused")
 	public boolean isUsingExternalFiles() {
 		return useExternalFiles;
+	}
+
+	/**
+	 * @return true if the server is running
+	 */
+	public boolean isRunning() {
+		return keepRunning;
 	}
 }

@@ -18,8 +18,36 @@
 
 package com.foxhorn.foxyserver.sampleapp;
 
+import android.content.Context;
+
+import com.foxhorn.foxyserver.sampleapp.auth.ExampleGuestOnlyAuthHandler;
+import com.foxhorn.foxyserver.web.api.IHttpAuthHandler;
+import com.foxhorn.foxyserver.web.hosting.HttpApplication;
+
+import java.io.IOException;
+
 /**
- * Created by mvanhorn on 5/27/15.
+ * This is what will get our server up and going
+ * Created by Matt Van Horn on 5/27/15.
  */
 public class Bootstrap {
+
+	private HttpApplication httpApplication;
+	private final IHttpAuthHandler authHandler;
+
+	public Bootstrap() {
+		authHandler = new ExampleGuestOnlyAuthHandler();
+	}
+
+	public void start(Context androidContext) {
+		httpApplication = new HttpApplication(9321, androidContext, null, null, authHandler);
+		httpApplication.start();
+
+	}
+
+	public void stop() throws IOException, InterruptedException {
+		httpApplication.stop();
+	}
+
+
 }

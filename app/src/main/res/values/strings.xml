@@ -1,3 +1,7 @@
 <resources>
 	<string name="app_name">Foxy Server Sample App</string>
+	<string name="title_activity_main">MainActivity</string>
+
+	<string name="hello_world">Welcome to the FoxyServer... Go ahead and turn me on... I bet I\'ll like it!</string>
+	<string name="action_settings">Settings</string>
 </resources>
